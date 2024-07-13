@@ -13,6 +13,7 @@ ____________________________________________________________________________*/
 Para utilizar o progama, necessita instalar a biblioteca GMP. Complila-se com g++ com o comando abaixo (onde 'ECC_Ed25519.CPP' e 'ECC_Ed25519' são os arquivos do código e o MAKE.file, respectivamente):
 
 $ g++ -I /usr/local/include -L /usr/local/lib -L /lib ECC_Ed25519.CPP -o ECC_Ed25519 -lgmp -lm -pthread
+
 $ ./ECC_Ed25519
 
 
