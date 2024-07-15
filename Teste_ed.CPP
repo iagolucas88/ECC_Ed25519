@@ -401,17 +401,18 @@ Ponto double_ponto(Ponto P){
 
 // 5. Multiplicacao de um ponto por um escalar (k*P)
 Ponto multiplicacao_escalar(mpz_t k_rand, Ponto Ponto_curva){
-    //cout << "\n\n__________________________Mult Escalar______________________________\n" << endl; // REMOVER
+    cout << "\n\n__________________________Mult Escalar______________________________\n" << endl; // REMOVER
 
     Ponto Ponto_R, Ponto_B;
     initPonto(Ponto_R); // Inicializa o ponto Ponto_resultante
     initPonto(Ponto_B, Ponto_curva.x, Ponto_curva.y); // Inicializa o ponto Ponto_curva
 
+    gmp_printf("k p/ mul: %Zd", k_rand);
     //gmp_printf("\nPonto Curva: (%Zd, %Zd)", Ponto_B.x, Ponto_B.y);
 
     // Verifica se k é 0
     if(mpz_cmp_ui(k_rand, 0) == 0){
-        //gmp_printf("\nComo k = 0\nx: % Zd", Ponto_B.x); // Apenas x eh necessario para a chave publica
+        gmp_printf("\nComo k = 0\nx: % Zd", Ponto_B.x); // Apenas x eh necessario para a chave publica
 
         clearPonto(Ponto_R); // Limpa o ponto Ponto_R
 
@@ -428,8 +429,8 @@ Ponto multiplicacao_escalar(mpz_t k_rand, Ponto Ponto_curva){
         //cout << "\n\nk_bit\n";
 
         while(mpz_cmp(k_rand, zero) > 0){
-            //mpz_and(k_bit, k_rand, um); // k_bit = k & 1 (bit menos significativo)
-            mpz_and(k_bit, k_rand, zero);
+            mpz_and(k_bit, k_rand, um); // k_bit = k & 1 (bit menos significativo)
+            //mpz_and(k_bit, k_rand, zero);
 
             // Mostra o valor do bit menos significativo
             //gmp_printf("%Zd", k_bit); 
@@ -453,7 +454,7 @@ Ponto multiplicacao_escalar(mpz_t k_rand, Ponto Ponto_curva){
         
         //gmp_printf("\n\nMultiplicacao Escalar\nx: %Zd \ny: %Zd", Ponto_R.x, Ponto_R.y); 
 
-        //cout << "\n________________________FIM Mult Escalar____________________________\n" << endl; // REMOVER
+        cout << "\n________________________FIM Mult Escalar____________________________\n" << endl; // REMOVER
         
         clearPonto(Ponto_B); // Limpa o ponto Ponto_B
         
@@ -529,9 +530,15 @@ void gera_int_rand(mpz_t k){
     cout << "\n___________________________FIM RANDOMICA____________________________\n" << endl;
 }
 
+//NAO NECESSITA MAIS
 // 7. Gera a CHAVE PUBLICA ultilizando a multiplicacao escalar da CHAVE PRIVADA com o Ponto base dado P_0
-Ponto gera_chave_pbl(mpz_t chave_prv, Ponto P0){ // pode fazer na main() apenas igualando o ponto
-    return multiplicacao_escalar(chave_prv, P0);
+void gera_chave_pbl(mpz_t chave_prv, Ponto P0, Ponto chave_pbl){ // pode fazer na main() apenas igualando o ponto
+    Ponto chave_prv_mult_P0;
+    initPonto(chave_prv_mult_P0);   
+
+    chave_prv_mult_P0 = (chave_prv, P0);
+    mpz_set(chave_pbl.x, chave_prv_mult_P0.x);
+    mpz_set(chave_pbl.y, chave_prv_mult_P0.y);
 }
 
 // 8. Encripta a mensagem ultilizando a CHAVE PUBLICA
@@ -642,16 +649,17 @@ int main(){
 
     // Gera a Chave Privada (k) limitada pela ordem da curva eliptica (n), retornando inteiro
     gera_int_rand(chv_prv);
-    //mpz_set(chv_prv, k);
     gmp_printf("\nChave Privada: % Zd ", chv_prv);
 
     Ponto chave_pbl;
     initPonto(chave_pbl);
 
     // Gera a Chave Publica fornecendo a Chave Privada
-    // pela multiplicacao escalar ultilizando o ponto inicial (x1, y1)
-    chave_pbl = gera_chave_pbl(chv_prv, P_0);
-    gmp_printf("\n\nChave Publica \nx: % Zd", chave_pbl.x);
+    // pela multiplicacao escalar ultilizando o ponto inicial (x0, y0)
+    //gera_chave_pbl(chv_prv, P_0, chave_pbl);
+    cout << "\n\n____________________________CHAVE PUBLICA____________________________" << endl;
+    chave_pbl = multiplicacao_escalar(chv_prv, P_0);
+    gmp_printf("\nChave Publica \nx: % Zd", chave_pbl.x);
     gmp_printf("\ny: % Zd", chave_pbl.y);
 
     Ponto C1, C2;
