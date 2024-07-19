@@ -135,11 +135,20 @@ Ponto codifica_mensagem_para_ponto_da_c25519(mpz_t msg){
         // Verifica se y^2 eh residuo quadratico (mod prime)
         if(mpz_cmp_ui(y_msg, 1) == 0){
             
+            // Raiz quadrada de 'y²' para 'y'
+            //y^((p-1)/2) ≡ 1 (mod p)
+            //y = sqrt(y²)  mod p
             mpz_set(exp_euler, p);
-            mpz_add_ui(exp_euler, exp_euler, 1);
-            mpz_cdiv_q_ui(exp_euler, exp_euler, 4);
+            mpz_sub_ui(exp_euler, exp_euler, 1);
+            mpz_cdiv_q_ui(exp_euler, exp_euler, 2);
+            mpz_powm(y_msg, y_msg_squared, exp_euler, p); // y = sqrt(y²)  mod p    
 
-            mpz_powm(y_msg, y_msg_squared, exp_euler, p); // y = sqrt(y²)
+
+            //mpz_set(exp_euler, p);
+            //mpz_add_ui(exp_euler, exp_euler, 1);
+            //mpz_cdiv_q_ui(exp_euler, exp_euler, 4);
+
+            //mpz_powm(y_msg, y_msg_squared, exp_euler, p); // y = sqrt(y²)
             
             //mpz_root(y_msg, y_msg_squared, 2); // Raiz quadrada de 'y²' para 'y'
             //mpz_mod(y_msg, y_msg, p); // y = sqrt(y²)  mod p
@@ -378,7 +387,7 @@ void gera_int_rand(mpz_t k){
 
     //cout << "\n\n____________________________RANDOMICA________________________________\n" << endl;
 
-    //cout << "Seed: ";
+    cout << "\nSeed: ";
     for(int i = 0; i < sizeof(seed); ++i){
         cout << hex << static_cast<int>(seed[i]);
     }
@@ -534,7 +543,7 @@ int main(){
     initPonto(msg_cod, zero, zero); 
     msg_cod = codifica_mensagem_para_ponto_da_c25519(msg_t_gmp);
     gmp_printf("\n\nMensagem Codificada\nx: % Zd", msg_cod.x);
-    gmp_printf("\ny: % Zd", msg_cod.y);
+    gmp_printf("\ny: % Zd\n", msg_cod.y);
 
     // Gera a Chave Privada (k) limitada pela ordem da curva eliptica (n), retornando inteiro
     gera_int_rand(chv_prv);
